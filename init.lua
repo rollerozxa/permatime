@@ -16,30 +16,32 @@ local function time_to_override(time)
 end
 
 local function set_override(timeofday)
-	if timeofday < 0 or timeofday > 1 then return end
-
 	permatime.override = timeofday
-	storage:set_float('permatime', timeofday)
-	print(timeofday)
-	print(time_to_override(timeofday))
+	if timeofday then
+		storage:set_float('permatime', timeofday)
+	else
+		storage:set_string('permatime', "")
+	end
 
 	for _, player in pairs(minetest.get_connected_players()) do
 		player:override_day_night_ratio(time_to_override(timeofday))
 	end
 end
 
-function update_time()
+local function update_time()
 	if permatime.override then
 		minetest.set_timeofday(permatime.override)
-	end
 
-	minetest.after(1, update_time)
+		minetest.after(1, update_time)
+	end
 end
 
 minetest.register_on_mods_loaded(function()
 	permatime.override = storage:get('permatime')
 
-	minetest.after(1, update_time)
+	if permatime.override then
+		minetest.after(1, update_time)
+	end
 end)
 
 minetest.register_chatcommand("permatime", {
@@ -49,6 +51,11 @@ minetest.register_chatcommand("permatime", {
 	func = function(name, param)
 		if not core.get_player_privs(name).settime then
 			return false, "You don't have permission to run this command (missing privilege: settime)."
+		end
+
+		if param == "" then
+			set_override(nil)
+			return true, "Disabled permanent time"
 		end
 
 		local hour, minute = param:match("^(%d+):(%d+)$")
