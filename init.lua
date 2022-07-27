@@ -6,11 +6,12 @@ permatime = {
 local storage = minetest.get_mod_storage()
 
 local function time_to_override(time)
-	--return time+0.5
+	if time == nil then return nil end
+
 	if time + 0.5 > 1 then
-		return time
+		return 1 - (time-0.5)*2
 	else
-		return time + 0.5
+		return time *2
 	end
 end
 
@@ -59,11 +60,9 @@ minetest.register_chatcommand("permatime", {
 			return false, "Invalid minute (must be between 0 and 59 inclusive)."
 		end
 
-		local timeofday = (hour * 60 + minute) / 1440
-		local player = minetest.get_player_by_name(name)
+		set_override((hour * 60 + minute) / 1440)
+		update_time()
 
-		set_override(timeofday)
-
-		return true, "Time of day changed."
+		return true, "Permanent time set to "..minetest.colorize("#ffff00", param)
 	end,
 })
