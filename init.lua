@@ -60,6 +60,10 @@ minetest.register_chatcommand("permatime", {
 
 		local hour, minute = param:match("^(%d+):(%d+)$")
 		hour = tonumber(hour); minute = tonumber(minute)
+		
+		if not hour or not minute then
+			return false, "Invalid input."
+		end
 
 		if hour < 0 or hour > 23 then
 			return false, "Invalid hour (must be between 0 and 23 inclusive)."
