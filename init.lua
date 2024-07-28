@@ -47,12 +47,8 @@ end)
 minetest.register_chatcommand("permatime", {
 	params = "<0..23>:<0..59>",
 	description = "Set the permanent time",
-	privs = {},
+	privs = {settime = true},
 	func = function(name, param)
-		if not core.get_player_privs(name).settime then
-			return false, "You don't have permission to run this command (missing privilege: settime)."
-		end
-
 		if param == "" then
 			set_override(nil)
 			return true, "Disabled permanent time"
