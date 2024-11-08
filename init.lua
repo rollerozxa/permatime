@@ -4,6 +4,7 @@ permatime = {
 }
 
 local storage = minetest.get_mod_storage()
+local S = minetest.get_translator('permatime')
 
 local function time_to_override(time)
 	if time == nil then return nil end
@@ -46,30 +47,30 @@ end)
 
 minetest.register_chatcommand("permatime", {
 	params = "<0..23>:<0..59>",
-	description = "Set the permanent time",
+	description = S("Set the permanent time"),
 	privs = {settime = true},
 	func = function(name, param)
 		if param == "" then
 			set_override(nil)
-			return true, "Disabled permanent time"
+			return true, S("Disabled permanent time.")
 		end
 
 		local hour, minute = param:match("^(%d+):(%d+)$")
 		hour = tonumber(hour); minute = tonumber(minute)
 		
 		if not hour or not minute then
-			return false, "Invalid input."
+			return false, S("Invalid input.")
 		end
 
 		if hour < 0 or hour > 23 then
-			return false, "Invalid hour (must be between 0 and 23 inclusive)."
+			return false, S("Invalid hour (must be between 0 and 23 inclusive).")
 		elseif minute < 0 or minute > 59 then
-			return false, "Invalid minute (must be between 0 and 59 inclusive)."
+			return false, S("Invalid minute (must be between 0 and 59 inclusive).")
 		end
 
 		set_override((hour * 60 + minute) / 1440)
 		update_time()
 
-		return true, "Permanent time set to "..minetest.colorize("#ffff00", param)
+		return true, S("Permanent time set to @1", minetest.colorize("#ffff00", param))
 	end,
 })
